@@ -241,7 +241,10 @@ public class PriceRangeSeekBar extends View {
             minLabel = String.valueOf(mLabels[tmpMinThumbIndex]);
         }
         mMinLabelPaint.setTextSize(mLabelMinTextSize);
-        canvas.drawText(minLabel, x, mLabelNormalTextSize, mMinLabelPaint);
+        //精确计算label绘制位置
+        Rect rect = new Rect();
+        mMinLabelPaint.getTextBounds(minLabel, 0, minLabel.length(), rect);
+        canvas.drawText(minLabel, x, mLabelPressedTextSize - rect.bottom, mMinLabelPaint);
 
         int maxLabelX = mMaxThumbRect.left + mThumbDrawable.getIntrinsicWidth() / 2;
         int tempMaxThumbIndex = getIndexByX(maxLabelX);
@@ -259,8 +262,10 @@ public class PriceRangeSeekBar extends View {
             maxLabel = String.valueOf(mLabels[tempMaxThumbIndex]);
         }
 
+        //精确计算label绘制位置
         mMaxLabelPaint.setTextSize(mLabelMaxTextSize);
-        canvas.drawText(maxLabel, maxLabelX, mLabelNormalTextSize, mMaxLabelPaint);
+        mMaxLabelPaint.getTextBounds(maxLabel, 0, maxLabel.length(), rect);
+        canvas.drawText(maxLabel, maxLabelX, mLabelPressedTextSize - rect.bottom, mMaxLabelPaint);
     }
 
     public void setLabels(int[] labels, int minIndex, int maxIndex) {
@@ -422,8 +427,8 @@ public class PriceRangeSeekBar extends View {
         return x - mThumbDrawable.getIntrinsicWidth() / 2 - mPartLength * getIndexByX(x);
     }
 
-    private void moveMinThumb(){
-        ValueAnimator animator = ValueAnimator.ofInt(mMinThumbRect.left,(int) (mPartLength * mMinThumbIndex));
+    private void moveMinThumb() {
+        ValueAnimator animator = ValueAnimator.ofInt(mMinThumbRect.left, (int) (mPartLength * mMinThumbIndex));
         animator.setDuration(200);
         animator.setInterpolator(new DecelerateInterpolator());
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -437,8 +442,8 @@ public class PriceRangeSeekBar extends View {
         animator.start();
     }
 
-    private void moveMaxThumb(){
-        ValueAnimator animator = ValueAnimator.ofInt(mMaxThumbRect.left,(int) (mPartLength * mMaxThumbIndex));
+    private void moveMaxThumb() {
+        ValueAnimator animator = ValueAnimator.ofInt(mMaxThumbRect.left, (int) (mPartLength * mMaxThumbIndex));
         animator.setDuration(200);
         animator.setInterpolator(new DecelerateInterpolator());
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -455,17 +460,17 @@ public class PriceRangeSeekBar extends View {
     /**
      * 放大字体
      */
-    private void zoomInTextSize(final boolean min){
-        ValueAnimator animator = ValueAnimator.ofInt(mLabelNormalTextSize,mLabelPressedTextSize);
+    private void zoomInTextSize(final boolean min) {
+        ValueAnimator animator = ValueAnimator.ofInt(mLabelNormalTextSize, mLabelPressedTextSize);
         animator.setDuration(200);
         animator.setInterpolator(new DecelerateInterpolator());
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if(min){
+                if (min) {
                     //左边滑块
                     mLabelMinTextSize = (int) valueAnimator.getAnimatedValue();
-                }else{
+                } else {
                     //右边滑块
                     mLabelMaxTextSize = (int) valueAnimator.getAnimatedValue();
                 }
@@ -478,17 +483,17 @@ public class PriceRangeSeekBar extends View {
     /**
      * 缩小字体
      */
-    private void zoomOutTextSize(final boolean min){
-        ValueAnimator animator = ValueAnimator.ofInt(mLabelPressedTextSize,mLabelNormalTextSize);
+    private void zoomOutTextSize(final boolean min) {
+        ValueAnimator animator = ValueAnimator.ofInt(mLabelPressedTextSize, mLabelNormalTextSize);
         animator.setDuration(200);
         animator.setInterpolator(new DecelerateInterpolator());
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                if(min){
+                if (min) {
                     //左边滑块
                     mLabelMinTextSize = (int) valueAnimator.getAnimatedValue();
-                }else{
+                } else {
                     //右边滑块
                     mLabelMaxTextSize = (int) valueAnimator.getAnimatedValue();
                 }
