@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <cn.xudaodao.android.pricerangeseekbar.PriceRangeSeekBar
+        android:id="@+id/rangeseekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="14dp"
+        app:label_normal_text_size="12sp"
+        app:label_pressed_text_size="16sp"
+        app:label_text_color="#50AEB6"
+        app:track_selected_color="#50AEB6" />
+
+    <Button
+        android:id="@+id/btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="价格区间" />
+</LinearLayout>

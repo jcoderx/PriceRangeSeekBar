@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PriceRangeSeekBar">
+        <attr name="track_height" format="dimension"/>
+        <attr name="track_unselected_color" format="reference|color"/>
+        <attr name="track_selected_color" format="reference|color"/>
+        <attr name="thumb_drawable" format="reference"/>
+        <attr name="track_margin" format="dimension"/>
+        <attr name="label_normal_text_size" format="dimension"/>
+        <attr name="label_pressed_text_size" format="dimension"/>
+        <attr name="label_text_color" format="reference|color"/>
+        <attr name="label_text_margin" format="dimension"/>
+    </declare-styleable>
+</resources>
