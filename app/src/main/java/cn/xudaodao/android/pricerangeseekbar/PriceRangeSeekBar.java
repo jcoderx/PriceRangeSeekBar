@@ -33,6 +33,7 @@ public class PriceRangeSeekBar extends View {
     private int mTrackSelectedColor;
     private Paint mTrackPaint;
     private int mTrackMargin;
+    private boolean mSupportZoom;
 
     private Drawable mThumbDrawable;
 
@@ -47,6 +48,7 @@ public class PriceRangeSeekBar extends View {
     private Paint mMinLabelPaint;
     private Paint mMaxLabelPaint;
     private int mLabelTextMargin;
+    private int mLabelHeight;
 
     private float mPartLength;
 
@@ -91,6 +93,7 @@ public class PriceRangeSeekBar extends View {
         int labelTextMargin = resources.getDimensionPixelOffset(R.dimen.range_seek_bar_label_margin);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.PriceRangeSeekBar);
+        mSupportZoom = a.getBoolean(R.styleable.PriceRangeSeekBar_support_zoom, false);
         mTrackHeight = a.getDimensionPixelOffset(R.styleable.PriceRangeSeekBar_track_height, trackHeight);
         mTrackUnselectedColor = a.getColor(R.styleable.PriceRangeSeekBar_track_unselected_color, trackUnselectedColor);
         mTrackSelectedColor = a.getColor(R.styleable.PriceRangeSeekBar_track_selected_color, trackSelectedColor);
@@ -103,6 +106,8 @@ public class PriceRangeSeekBar extends View {
         mLabelPressedTextSize = a.getDimensionPixelOffset(R.styleable.PriceRangeSeekBar_label_pressed_text_size, labelPressedTextSize);
         mLabelTextColor = a.getColor(R.styleable.PriceRangeSeekBar_label_text_color, labelTextColor);
         mLabelTextMargin = a.getDimensionPixelOffset(R.styleable.PriceRangeSeekBar_label_text_margin, labelTextMargin);
+
+        mLabelHeight = mSupportZoom ? mLabelPressedTextSize : mLabelNormalTextSize;
 
         a.recycle();
     }
@@ -140,7 +145,7 @@ public class PriceRangeSeekBar extends View {
         mMinThumbRect = new Rect();
         mMinThumbRect.left = (int) (mPartLength * mMinThumbIndex);
         mMinThumbRect.right = (int) (mPartLength * mMinThumbIndex + mThumbDrawable.getIntrinsicWidth());
-        mMinThumbRect.top = mLabelPressedTextSize + mLabelTextMargin;
+        mMinThumbRect.top = mLabelHeight + mLabelTextMargin;
         mMinThumbRect.bottom = mMinThumbRect.top + mThumbDrawable.getIntrinsicHeight();
     }
 
@@ -148,13 +153,13 @@ public class PriceRangeSeekBar extends View {
         mMaxThumbRect = new Rect();
         mMaxThumbRect.left = (int) (mPartLength * mMaxThumbIndex);
         mMaxThumbRect.right = (int) (mPartLength * mMaxThumbIndex + mThumbDrawable.getIntrinsicWidth());
-        mMaxThumbRect.top = mLabelPressedTextSize + mLabelTextMargin;
+        mMaxThumbRect.top = mLabelHeight + mLabelTextMargin;
         mMaxThumbRect.bottom = mMaxThumbRect.top + mThumbDrawable.getIntrinsicHeight();
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), mLabelPressedTextSize + mLabelTextMargin + mThumbDrawable.getIntrinsicHeight());
+        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), mLabelHeight + mLabelTextMargin + mThumbDrawable.getIntrinsicHeight());
     }
 
     @Override
@@ -203,7 +208,7 @@ public class PriceRangeSeekBar extends View {
         RectF rectTrack = new RectF();
         rectTrack.left = mTrackMargin;
         rectTrack.right = getWidth() - mTrackMargin;
-        rectTrack.top = mLabelPressedTextSize + mLabelTextMargin + (mThumbDrawable.getIntrinsicHeight() - mTrackHeight) / 2;
+        rectTrack.top = mLabelHeight + mLabelTextMargin + (mThumbDrawable.getIntrinsicHeight() - mTrackHeight) / 2;
         rectTrack.bottom = rectTrack.top + mTrackHeight;
 
         canvas.drawRoundRect(rectTrack, 5, 5, mTrackPaint);
@@ -244,7 +249,7 @@ public class PriceRangeSeekBar extends View {
         //精确计算label绘制位置
         Rect rect = new Rect();
         mMinLabelPaint.getTextBounds(minLabel, 0, minLabel.length(), rect);
-        canvas.drawText(minLabel, x, mLabelPressedTextSize - rect.bottom, mMinLabelPaint);
+        canvas.drawText(minLabel, x, mLabelHeight - rect.bottom, mMinLabelPaint);
 
         int maxLabelX = mMaxThumbRect.left + mThumbDrawable.getIntrinsicWidth() / 2;
         int tempMaxThumbIndex = getIndexByX(maxLabelX);
@@ -265,7 +270,7 @@ public class PriceRangeSeekBar extends View {
         //精确计算label绘制位置
         mMaxLabelPaint.setTextSize(mLabelMaxTextSize);
         mMaxLabelPaint.getTextBounds(maxLabel, 0, maxLabel.length(), rect);
-        canvas.drawText(maxLabel, maxLabelX, mLabelPressedTextSize - rect.bottom, mMaxLabelPaint);
+        canvas.drawText(maxLabel, maxLabelX, mLabelHeight - rect.bottom, mMaxLabelPaint);
     }
 
     public void setLabels(int[] labels, int minIndex, int maxIndex) {
@@ -312,8 +317,9 @@ public class PriceRangeSeekBar extends View {
             mMinThumbDown = true;
             // TODO invalidate
             // invalidate();
-
-            zoomInTextSize(true);
+            if (mSupportZoom) {
+                zoomInTextSize(true);
+            }
         } else if (mMaxThumbRect.contains(downX, downY)) {
             if (mMaxThumbDown) {
                 return;
@@ -323,8 +329,9 @@ public class PriceRangeSeekBar extends View {
             mMaxThumbDown = true;
             // TODO invalidate
             // invalidate();
-
-            zoomInTextSize(false);
+            if (mSupportZoom) {
+                zoomInTextSize(false);
+            }
         }
     }
 
@@ -385,7 +392,9 @@ public class PriceRangeSeekBar extends View {
             //invalidate();
             //滑动滑块使用动画
             moveMinThumb();
-            zoomOutTextSize(true);
+            if (mSupportZoom) {
+                zoomOutTextSize(true);
+            }
 
             mMinThumbDown = false;
             mMinPointerLastX = 0;
@@ -408,7 +417,9 @@ public class PriceRangeSeekBar extends View {
             //invalidate();
             //滑动滑块使用动画
             moveMaxThumb();
-            zoomOutTextSize(false);
+            if (mSupportZoom) {
+                zoomOutTextSize(false);
+            }
 
             mMaxThumbDown = false;
             mMaxPointerLastX = 0;

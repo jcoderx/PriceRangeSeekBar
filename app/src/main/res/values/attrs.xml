@@ -10,5 +10,6 @@
         <attr name="label_pressed_text_size" format="dimension"/>
         <attr name="label_text_color" format="reference|color"/>
         <attr name="label_text_margin" format="dimension"/>
+        <attr name="support_zoom" format="boolean"/>
     </declare-styleable>
 </resources>
