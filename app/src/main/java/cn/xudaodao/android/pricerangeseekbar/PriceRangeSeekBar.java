@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 
 public class PriceRangeSeekBar extends View {
@@ -184,18 +185,22 @@ public class PriceRangeSeekBar extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         final int action = event.getActionMasked();
+        ViewGroup parent = (ViewGroup) getParent();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_POINTER_DOWN:
                 handleTouchDown(event);
+                parent.requestDisallowInterceptTouchEvent(true);
                 break;
             case MotionEvent.ACTION_MOVE:
                 handleTouchMove(event);
+                parent.requestDisallowInterceptTouchEvent(true);
                 break;
             case MotionEvent.ACTION_POINTER_UP:
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
                 handleTouchUp(event);
+                parent.requestDisallowInterceptTouchEvent(false);
                 break;
         }
         return super.onTouchEvent(event);
@@ -529,4 +534,5 @@ public class PriceRangeSeekBar extends View {
     public void setOnRangeSelectedListener(OnRangeSelectedListener onRangeSelectedListener) {
         mOnRangeSelectedListener = onRangeSelectedListener;
     }
+
 }
